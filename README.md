@@ -4,6 +4,12 @@
 
 ## Demo
 
+<div align="center">
+
+[▶️ Watch the quick demo](https://youtu.be/BiAJUCTbbHs)
+
+</div>
+
 TransLens is a browser-only PDF reader that gives instant translations for highlighted text. PDFs never leave your device; only the selected snippet is sent to the provider you choose.
 
 ## What you get
