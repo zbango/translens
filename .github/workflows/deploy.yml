@@ -11,7 +11,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: "pages"
   cancel-in-progress: true
 
 jobs:
@@ -33,11 +33,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Add sponsor link to job summary
-        run: |
-          echo "## Sponsor" >> $GITHUB_STEP_SUMMARY
-          echo "[Buy me a coffee](https://buymeacoffee.com/zbango)" >> $GITHUB_STEP_SUMMARY
-
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -53,4 +48,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

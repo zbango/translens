@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { FileUpload } from "./components/FileUpload/FileUpload";
 import { PDFViewer } from "./components/PDFViewer/PDFViewer";
@@ -9,9 +9,13 @@ import { useTranslationStore } from "./stores/translationStore";
 import type { SelectionData } from "./types";
 import { useTranslation } from "react-i18next";
 import Logo from "./assets/logo.png";
+import Joyride, { STATUS } from "react-joyride";
+import type { CallBackProps, Step } from "react-joyride";
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
+  const [tourRun, setTourRun] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
   const { t } = useTranslation();
   const {
     provider,
@@ -39,6 +43,50 @@ function App() {
     translateSelection(sel, provider, sourceLang, targetLang);
   };
 
+  const steps = useMemo<Step[]>(
+    () => [
+      {
+        target: '[data-tour="upload"]',
+        title: "Load your PDF",
+        content: "Drop or pick a PDF. It stays local in your browser.",
+        disableBeacon: true,
+      },
+      {
+        target: '[data-tour="settings"]',
+        title: "Pick provider & languages",
+        content:
+          "Choose provider, set API keys, and select source/target languages.",
+      },
+      {
+        target: '[data-tour="viewer"]',
+        title: "Highlight text",
+        content: "Select text on the PDF to translate instantly.",
+      },
+      {
+        target: '[data-tour="translation"]',
+        title: "See the translation",
+        content: "Translations appear here with copy and cached state.",
+      },
+      {
+        target: '[data-tour="header-actions"]',
+        title: "UI & theme",
+        content: "Switch UI language, theme, and sponsor link.",
+      },
+    ],
+    []
+  );
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status, index, type } = data;
+    if (type === "step:after" || type === "error:target_not_found") {
+      setStepIndex(index + 1);
+    }
+    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+      setTourRun(false);
+      setStepIndex(0);
+    }
+  };
+
   useEffect(() => {
     const body = document.body;
     body.classList.remove("theme-dark", "theme-light");
@@ -47,8 +95,29 @@ function App() {
 
   return (
     <div className="min-h-screen text-slate-100">
+      <Joyride
+        steps={steps}
+        run={tourRun}
+        stepIndex={stepIndex}
+        callback={handleJoyrideCallback}
+        continuous
+        showSkipButton
+        disableScrolling
+        styles={{
+          options: {
+            zIndex: 30000,
+            primaryColor: "#38bdf8",
+            backgroundColor: "#0f172a",
+            textColor: "#e2e8f0",
+          },
+          tooltip: { borderRadius: 12 },
+        }}
+      />
       <div className="w-full px-6 py-8">
-        <header className="flex items-center justify-between mb-6">
+        <header
+          className="flex items-center justify-between mb-6"
+          data-tour="header-actions"
+        >
           <div className="flex items-start gap-3">
             <img
               src={Logo}
@@ -90,6 +159,15 @@ function App() {
               </span>
               <span>Sponsor</span>
             </a>
+            <button
+              onClick={() => {
+                setStepIndex(0);
+                setTourRun(true);
+              }}
+              className="px-3 py-2 rounded-md border border-slate-800 bg-slate-900/60 text-sm text-slate-100 hover:border-accent/60 transition"
+            >
+              Guide
+            </button>
             <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
               {provider.toUpperCase()} • {targetLang.toUpperCase()}
             </div>
@@ -97,16 +175,21 @@ function App() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-6">
-          <div className="space-y-4">
+          <div className="space-y-4" data-tour="upload">
             <FileUpload onFileSelected={(f) => setFile(f)} />
-            <SettingsPanel />
+            <div data-tour="settings">
+              <SettingsPanel />
+            </div>
           </div>
 
-          <div className="rounded-2xl glass p-4 border border-slate-800/60 min-h-[70vh]">
+          <div
+            className="rounded-2xl glass p-4 border border-slate-800/60 min-h-[70vh]"
+            data-tour="viewer"
+          >
             <PDFViewer file={file} onSelection={handleSelection} />
           </div>
 
-          <div className="hidden lg:block">
+          <div className="hidden lg:block" data-tour="translation">
             <TranslationPanel
               selection={selection}
               translatedText={translatedText}
