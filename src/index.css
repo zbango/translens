@@ -23,3 +23,46 @@ body {
   scrollbar-color: #475569 #0b1220;
   scrollbar-width: thin;
 }
+
+/* Light theme overrides */
+body.theme-light {
+  background: #f7fafc;
+  color: #0f172a;
+}
+
+body.theme-light .glass {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+body.theme-light .bg-panel {
+  background-color: #ffffff !important;
+}
+
+body.theme-light .text-slate-100,
+body.theme-light .text-slate-200,
+body.theme-light .text-slate-300,
+body.theme-light .text-slate-400 {
+  color: #0f172a !important;
+}
+
+body.theme-light [class*='border-slate-800'] {
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+body.theme-light [class*='bg-slate-800'],
+body.theme-light [class*='bg-slate-900'] {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light [class*='bg-slate-900/60'] {
+  background-color: rgba(226, 232, 240, 0.8) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light button {
+  color: #0f172a;
+}

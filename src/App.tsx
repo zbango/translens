@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { FileUpload } from "./components/FileUpload/FileUpload";
 import { PDFViewer } from "./components/PDFViewer/PDFViewer";
@@ -12,8 +12,15 @@ import { useTranslation } from "react-i18next";
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const { t } = useTranslation();
-  const { provider, sourceLang, targetLang, uiLanguage, setUiLanguage } =
-    useSettingsStore();
+  const {
+    provider,
+    sourceLang,
+    targetLang,
+    uiLanguage,
+    setUiLanguage,
+    theme,
+    setTheme,
+  } = useSettingsStore();
   const {
     selection,
     translatedText,
@@ -30,6 +37,12 @@ function App() {
     setSelection(sel);
     translateSelection(sel, provider, sourceLang, targetLang);
   };
+
+  useEffect(() => {
+    const body = document.body;
+    body.classList.remove("theme-dark", "theme-light");
+    body.classList.add(theme === "light" ? "theme-light" : "theme-dark");
+  }, [theme]);
 
   return (
     <div className="min-h-screen text-slate-100">
@@ -53,6 +66,10 @@ function App() {
                   i18nInstance.changeLanguage(lng)
                 );
               }}
+            />
+            <ThemeSwitcher
+              active={theme}
+              onToggle={() => setTheme(theme === "light" ? "dark" : "light")}
             />
             <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
               {provider.toUpperCase()} • {targetLang.toUpperCase()}
@@ -88,6 +105,30 @@ function App() {
 }
 
 export default App;
+
+function ThemeSwitcher({
+  active,
+  onToggle,
+}: {
+  active: "light" | "dark";
+  onToggle: () => void;
+}) {
+  const isLight = active === "light";
+  return (
+    <button
+      onClick={onToggle}
+      className={`flex items-center gap-2 px-3 py-2 rounded-md border text-sm transition ${
+        isLight
+          ? "bg-white/80 text-slate-900 border-slate-200"
+          : "bg-slate-900 text-slate-100 border-slate-700"
+      }`}
+      aria-label="Toggle theme"
+    >
+      <span>{isLight ? "🌞" : "🌙"}</span>
+      <span>{isLight ? "Light" : "Dark"}</span>
+    </button>
+  );
+}
 
 function LanguageSwitcher({
   active,
