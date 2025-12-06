@@ -79,6 +79,17 @@ function App() {
               active={theme}
               onToggle={() => setTheme(theme === "light" ? "dark" : "light")}
             />
+            <a
+              href="https://buymeacoffee.com/zbango"
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-2 rounded-md border border-accent/60 bg-accent/10 text-sm text-accent font-semibold hover:bg-accent/20 transition flex items-center gap-2"
+            >
+              <span role="img" aria-label="heart" className="text-red-500">
+                ❤️
+              </span>
+              <span>Sponsor</span>
+            </a>
             <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
               {provider.toUpperCase()} • {targetLang.toUpperCase()}
             </div>
