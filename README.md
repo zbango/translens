@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# TransLens — PDF Translation Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TransLens is a browser-only PDF reader that gives instant translations for highlighted text. PDFs never leave your device; only the selected snippet is sent to the provider you choose.
 
-Currently, two official plugins are available:
+## What you get
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- PDF viewer with selection → translation flow.
+- Translation side panel (non-blocking), copy, and cached results.
+- Providers: OpenAI, Anthropic, Ollama (local), LibreTranslate.
+- Settings for provider keys/base URLs/models and language pairs.
+- UI languages: English, Español, Français. Theme toggle (light/dark).
+- Reader aids: page jump, zoom presets, fit-to-width, rotate, single/continuous layout, text-layer toggle, copy last selection.
 
-## React Compiler
+## Privacy
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- PDFs stay in-browser (react-pdf/PDF.js). No uploads.
+- Only the highlighted text is sent to your selected provider.
+- API keys live in localStorage on the client.
 
-## Expanding the ESLint configuration
+## Quick start (local)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
+# open the shown localhost URL
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Configure providers
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Open the Settings panel:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Paste API keys/base URLs/models for OpenAI/Anthropic/Ollama/LibreTranslate.
+- Choose source/target languages and default provider.
+  Keys are stored locally in your browser only.
+
+## Deploy to GitHub Pages
+
+- `vite.config.ts` base is set to `/translens/` for repo pages.
+- Workflow: `.github/workflows/deploy.yml` builds on pushes to `main` and publishes `dist/` to Pages.
+- In GitHub → Settings → Pages, choose “GitHub Actions”. Your site: `https://<user>.github.io/translens/`.  
+  If you use a different repo name or custom domain, update `base` in `vite.config.ts`.
+
+## Tech (brief)
+
+React + TypeScript + Vite, Tailwind utility classes, Zustand stores, react-pdf/PDF.js, react-i18next. Theme via body class toggle.
+
+## Notes
+
+- Large PDFs: use single-page + fit-width for smooth scrolling; continuous renders all pages.
+- PDF.js worker is large; the bundle size warning is expected. Code splitting can be added later.
