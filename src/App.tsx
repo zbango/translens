@@ -8,6 +8,7 @@ import { useSettingsStore } from "./stores/settingsStore";
 import { useTranslationStore } from "./stores/translationStore";
 import type { SelectionData } from "./types";
 import { useTranslation } from "react-i18next";
+import Logo from "./assets/logo.png";
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -48,14 +49,21 @@ function App() {
     <div className="min-h-screen text-slate-100">
       <div className="w-full px-6 py-8">
         <header className="flex items-center justify-between mb-6">
-          <div>
-            <p className="text-sm text-slate-400 uppercase tracking-[0.08em]">
-              {t("app.title")}
-            </p>
-            <h1 className="text-2xl font-semibold text-slate-100">
-              {t("app.subtitle")}
-            </h1>
-            <p className="text-sm text-slate-400">{t("app.privacy")}</p>
+          <div className="flex items-start gap-3">
+            <img
+              src={Logo}
+              alt="TransLens logo"
+              className="w-12 h-12 flex-shrink-0 drop-shadow-sm"
+            />
+            <div>
+              <p className="text-sm text-slate-400 uppercase tracking-[0.08em]">
+                {t("app.title")}
+              </p>
+              <h1 className="text-2xl font-semibold text-slate-100">
+                {t("app.subtitle")}
+              </h1>
+              <p className="text-sm text-slate-400">{t("app.privacy")}</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <LanguageSwitcher
