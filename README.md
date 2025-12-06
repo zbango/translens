@@ -4,16 +4,6 @@
 
 ## Demo
 
-<div align="center">
-
-[▶️ Watch the quick demo](./demo/cursorful-video-1765059975128.mp4)
-
-</div>
-
-<div align="center">
-  <img src="./demo/image.png" alt="TransLens screenshot" width="900" />
-</div>
-
 TransLens is a browser-only PDF reader that gives instant translations for highlighted text. PDFs never leave your device; only the selected snippet is sent to the provider you choose.
 
 ## What you get
