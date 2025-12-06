@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface FileUploadProps {
   onFileSelected: (file: File | null) => void
@@ -8,6 +9,7 @@ interface FileUploadProps {
 export function FileUpload({ onFileSelected }: FileUploadProps) {
   const inputRef = useRef<HTMLInputElement | null>(null)
   const [dragging, setDragging] = useState(false)
+  const { t } = useTranslation()
 
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) return
@@ -41,11 +43,11 @@ export function FileUpload({ onFileSelected }: FileUploadProps) {
       />
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-slate-300">Drop a PDF or click to upload</p>
-          <p className="text-xs text-slate-500">Files stay local to your browser</p>
+          <p className="text-sm text-slate-300">{t('upload.drop')}</p>
+          <p className="text-xs text-slate-500">{t('upload.local')}</p>
         </div>
         <button className="px-3 py-2 rounded-lg bg-accent text-slate-900 text-sm font-semibold">
-          Choose PDF
+          {t('upload.button')}
         </button>
       </div>
     </div>

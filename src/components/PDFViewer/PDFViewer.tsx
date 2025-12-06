@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 import { extractSelectedText } from '../../services/pdf/textExtraction'
 import type { SelectionData } from '../../types'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
@@ -26,6 +27,7 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
   const [showTextLayer, setShowTextLayer] = useState(true)
   const [lastSelection, setLastSelection] = useState<SelectionData | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const { t } = useTranslation()
 
   const fileUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file])
 
@@ -46,7 +48,7 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
   if (!file) {
     return (
       <div className="h-full rounded-xl border border-slate-800/60 bg-panel flex items-center justify-center text-slate-400">
-        Load a PDF to begin
+        {t('viewer.empty')}
       </div>
     )
   }
@@ -60,16 +62,16 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
             disabled={pageNumber <= 1}
           >
-            Prev
+            {t('viewer.prev')}
           </button>
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100 disabled:opacity-40"
             onClick={() => setPageNumber((p) => Math.min(numPages, p + 1))}
             disabled={pageNumber >= numPages}
           >
-            Next
+            {t('viewer.next')}
           </button>
-          <span className="text-slate-400">Page</span>
+          <span className="text-slate-400">{t('viewer.page')}</span>
           <input
             type="number"
             className="w-16 rounded-md bg-slate-900 border border-slate-800 px-2 py-1 text-slate-100"
@@ -87,7 +89,7 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100"
             onClick={() => setScale((s) => Math.max(0.5, s - 0.1))}
-            title="Zoom out"
+            title={t('viewer.zoomOut')}
           >
             -
           </button>
@@ -95,14 +97,14 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100"
             onClick={() => setScale((s) => Math.min(2.5, s + 0.1))}
-            title="Zoom in"
+            title={t('viewer.zoomIn')}
           >
             +
           </button>
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100"
             onClick={() => setScale(1)}
-            title="Reset zoom"
+            title={t('viewer.resetZoom')}
           >
             100%
           </button>
@@ -116,28 +118,28 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
                 setScale(nextScale)
               }
             }}
-            title="Fit to width"
+            title={t('viewer.fitWidth')}
           >
-            Fit width
+            {t('viewer.fitWidth')}
           </button>
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100"
             onClick={() => setScale(1.25)}
-            title="Zoom 125%"
+            title={t('viewer.zoom125')}
           >
             125%
           </button>
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100"
             onClick={() => setScale(1.5)}
-            title="Zoom 150%"
+            title={t('viewer.zoom150')}
           >
             150%
           </button>
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100"
             onClick={() => setRotate((r) => (r + 90) % 360)}
-            title="Rotate 90°"
+            title={t('viewer.rotate')}
           >
             ⟳
           </button>
@@ -149,9 +151,9 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
                 : 'border-slate-800 text-slate-200 bg-slate-900',
             )}
             onClick={() => setContinuous((v) => !v)}
-            title="Toggle continuous scroll"
+            title={t('viewer.singlePage')}
           >
-            {continuous ? 'Continuous' : 'Single page'}
+            {continuous ? t('viewer.continuous') : t('viewer.singlePage')}
           </button>
           <button
             className={classNames(
@@ -161,17 +163,17 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
                 : 'border-accent text-accent bg-accent/10',
             )}
             onClick={() => setShowTextLayer((v) => !v)}
-            title="Toggle text layer"
+            title={t('viewer.toggleTextLayer')}
           >
-            {showTextLayer ? 'Hide text layer' : 'Show text layer'}
+            {showTextLayer ? t('viewer.hideTextLayer') : t('viewer.showTextLayer')}
           </button>
           <button
             className="px-3 py-1 rounded-lg bg-slate-800 text-slate-100 disabled:opacity-50"
             onClick={() => lastSelection?.text && navigator.clipboard.writeText(lastSelection.text)}
             disabled={!lastSelection}
-            title="Copy last selection"
+            title={t('viewer.copySelection')}
           >
-            Copy selection
+            {t('viewer.copySelection')}
           </button>
         </div>
       </div>
@@ -185,7 +187,7 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
           file={fileUrl}
           onLoadSuccess={({ numPages: pages }) => setNumPages(pages)}
           loading={<Loader />}
-          error={<div className="text-red-400 text-sm">Failed to load PDF</div>}
+          error={<div className="text-red-400 text-sm">{t('viewer.loadFailed')}</div>}
         >
           {continuous ? (
             Array.from({ length: numPages }, (_, idx) => (
@@ -219,9 +221,10 @@ export function PDFViewer({ file, onSelection }: PDFViewerProps) {
 }
 
 function Loader() {
+  const { t } = useTranslation()
   return (
     <div className="flex items-center justify-center py-12 text-slate-400 text-sm">
-      Loading PDF...
+      {t('viewer.loading')}
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSettingsStore } from '../../stores/settingsStore'
 import type { ProviderId } from '../../types'
 
@@ -23,9 +24,17 @@ const providerLabels: Record<ProviderId, string> = {
 }
 
 export function SettingsPanel() {
-  const { provider, setProvider, sourceLang, targetLang, setLanguages, configs, updateConfig } =
+  const { provider, setProvider, sourceLang, targetLang, setLanguages, configs, updateConfig, uiLanguage } =
     useSettingsStore()
+  const { t, i18n } = useTranslation()
   const currentConfig = useMemo(() => configs[provider] || {}, [configs, provider])
+
+  // Sync i18n language with stored UI preference on mount
+  useEffect(() => {
+    if (uiLanguage && i18n.language !== uiLanguage) {
+      void i18n.changeLanguage(uiLanguage)
+    }
+  }, [uiLanguage, i18n])
 
   const handleInput = (field: 'apiKey' | 'baseUrl' | 'model', value: string) => {
     updateConfig(provider, { [field]: value })
@@ -36,8 +45,8 @@ export function SettingsPanel() {
       <div className="rounded-xl glass p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-sm text-slate-200 font-semibold">Provider</p>
-            <p className="text-xs text-slate-500">Switch between available backends</p>
+            <p className="text-sm text-slate-200 font-semibold">{t('settings.provider')}</p>
+            <p className="text-xs text-slate-500">{t('settings.switchHint')}</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -59,11 +68,11 @@ export function SettingsPanel() {
 
       <div className="rounded-xl glass p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-200 font-semibold">Languages</p>
+          <p className="text-sm text-slate-200 font-semibold">{t('settings.languages')}</p>
         </div>
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Source</label>
+            <label className="block text-xs text-slate-400 mb-1">{t('settings.source')}</label>
             <select
               className="w-full rounded-lg bg-slate-900 border border-slate-800 text-slate-100 px-3 py-2"
               value={sourceLang}
@@ -77,7 +86,7 @@ export function SettingsPanel() {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-1">Target</label>
+            <label className="block text-xs text-slate-400 mb-1">{t('settings.target')}</label>
             <select
               className="w-full rounded-lg bg-slate-900 border border-slate-800 text-slate-100 px-3 py-2"
               value={targetLang}
@@ -97,7 +106,7 @@ export function SettingsPanel() {
 
       <div className="rounded-xl glass p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-200 font-semibold">Provider Settings</p>
+          <p className="text-sm text-slate-200 font-semibold">{t('settings.providerSettings')}</p>
           <p className="text-xs text-slate-500">{providerLabels[provider]}</p>
         </div>
         {['openai', 'anthropic'].includes(provider) && (
@@ -126,9 +135,10 @@ export function SettingsPanel() {
           />
         )}
         <p className="text-xs text-slate-500">
-          Credentials stay in localStorage and are never sent anywhere except to the chosen provider.
+          {t('settings.credsNote')}
         </p>
       </div>
+
     </div>
   )
 }

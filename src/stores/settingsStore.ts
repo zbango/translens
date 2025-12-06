@@ -13,10 +13,12 @@ interface SettingsState {
   sourceLang: string
   targetLang: string
   autoDetect: boolean
+  uiLanguage: string
   configs: ProviderSettings
   setProvider: (provider: ProviderId) => void
   setLanguages: (source: string, target: string, autoDetect?: boolean) => void
   updateConfig: (provider: ProviderId, config: ProviderConfig) => void
+  setUiLanguage: (lng: string) => void
 }
 
 const defaultConfigs: ProviderSettings = {
@@ -50,6 +52,7 @@ export const useSettingsStore = create<SettingsState>()(
       sourceLang: 'auto',
       targetLang: 'en',
       autoDetect: true,
+      uiLanguage: 'en',
       configs: defaultConfigs,
       setProvider: (provider) => set({ provider }),
       setLanguages: (source, target, autoDetect = get().autoDetect) =>
@@ -60,6 +63,7 @@ export const useSettingsStore = create<SettingsState>()(
           applyConfigToProvider(provider, merged)
           return { configs: { ...state.configs, [provider]: merged } }
         }),
+      setUiLanguage: (lng) => set({ uiLanguage: lng }),
     }),
     { name: 'translens-settings' },
   ),

@@ -7,10 +7,13 @@ import { TranslationPanel } from "./components/TranslationPanel/TranslationPanel
 import { useSettingsStore } from "./stores/settingsStore";
 import { useTranslationStore } from "./stores/translationStore";
 import type { SelectionData } from "./types";
+import { useTranslation } from "react-i18next";
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
-  const { provider, sourceLang, targetLang } = useSettingsStore();
+  const { t } = useTranslation();
+  const { provider, sourceLang, targetLang, uiLanguage, setUiLanguage } =
+    useSettingsStore();
   const {
     selection,
     translatedText,
@@ -34,18 +37,26 @@ function App() {
         <header className="flex items-center justify-between mb-6">
           <div>
             <p className="text-sm text-slate-400 uppercase tracking-[0.08em]">
-              TRANSLENS
+              {t("app.title")}
             </p>
             <h1 className="text-2xl font-semibold text-slate-100">
-              Instant, local-first translations
+              {t("app.subtitle")}
             </h1>
-            <p className="text-sm text-slate-400">
-              PDFs stay in-browser. Only the selected snippet is sent to your
-              chosen provider.
-            </p>
+            <p className="text-sm text-slate-400">{t("app.privacy")}</p>
           </div>
-          <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
-            {provider.toUpperCase()} • {targetLang.toUpperCase()}
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher
+              active={uiLanguage}
+              onChange={(lng) => {
+                setUiLanguage(lng);
+                void import("./i18n").then(({ default: i18nInstance }) =>
+                  i18nInstance.changeLanguage(lng)
+                );
+              }}
+            />
+            <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
+              {provider.toUpperCase()} • {targetLang.toUpperCase()}
+            </div>
           </div>
         </header>
 
@@ -77,3 +88,37 @@ function App() {
 }
 
 export default App;
+
+function LanguageSwitcher({
+  active,
+  onChange,
+}: {
+  active: string;
+  onChange: (lng: string) => void;
+}) {
+  const options = [
+    { code: "en", label: "EN", flag: "🇺🇸" },
+    { code: "es", label: "ES", flag: "🇪🇸" },
+    { code: "fr", label: "FR", flag: "🇫🇷" },
+  ];
+
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-2 py-1">
+      {options.map((opt) => (
+        <button
+          key={opt.code}
+          onClick={() => onChange(opt.code)}
+          className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm transition ${
+            active === opt.code
+              ? "bg-accent/20 text-slate-100 border border-accent/60"
+              : "text-slate-300 border border-transparent hover:border-slate-700"
+          }`}
+          aria-label={`Switch to ${opt.label}`}
+        >
+          <span>{opt.flag}</span>
+          <span>{opt.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
