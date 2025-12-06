@@ -16,6 +16,8 @@ function App() {
   const [file, setFile] = useState<File | null>(null);
   const [tourRun, setTourRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
   const { t } = useTranslation();
   const {
     provider,
@@ -164,13 +166,36 @@ function App() {
                 setStepIndex(0);
                 setTourRun(true);
               }}
-              className="px-3 py-2 rounded-md border border-slate-800 bg-slate-900/60 text-sm text-slate-100 hover:border-accent/60 transition"
+              className="px-3 py-2 rounded-md border border-slate-800 bg-slate-900/60 text-sm text-slate-100 hover:border-accent/60 transition flex items-center gap-2"
             >
-              Guide
+              <span role="img" aria-label="guide">
+                🧭
+              </span>
+              <span>Guide</span>
             </button>
-            <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
+            <button
+              onClick={() => setFaqOpen(true)}
+              className="px-3 py-2 rounded-md border border-slate-800 bg-slate-900/60 text-sm text-slate-100 hover:border-accent/60 transition flex items-center gap-2"
+            >
+              <span role="img" aria-label="faq">
+                ❓
+              </span>
+              <span>FAQs</span>
+            </button>
+            <a
+              href="https://github.com/zbango/translens"
+              target="_blank"
+              rel="noreferrer"
+              className="px-3 py-2 rounded-md border border-slate-800 bg-slate-900/60 text-sm text-slate-100 hover:border-accent/60 transition flex items-center gap-2"
+            >
+              <span role="img" aria-label="github">
+                🐙
+              </span>
+              <span>GitHub</span>
+            </a>
+            {/*      <div className="rounded-lg border border-accent/40 bg-accent/10 px-4 py-2 text-sm text-accent font-semibold">
               {provider.toUpperCase()} • {targetLang.toUpperCase()}
-            </div>
+            </div> */}
           </div>
         </header>
 
@@ -202,6 +227,52 @@ function App() {
           </div>
         </div>
       </div>
+      {faqOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onClick={() => setFaqOpen(false)}
+        >
+          <div
+            className="max-w-2xl w-full rounded-2xl glass border border-slate-800 bg-panel p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-slate-100">FAQs</h2>
+              <button
+                onClick={() => setFaqOpen(false)}
+                className="text-slate-400 hover:text-slate-200 text-lg"
+                aria-label="Close FAQs"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-3">
+              {faqItems.map((faq) => {
+                const open = openFaq === faq.id;
+                return (
+                  <div
+                    key={faq.id}
+                    className="rounded-lg border border-slate-800 bg-slate-900/60"
+                  >
+                    <button
+                      className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-slate-100"
+                      onClick={() => setOpenFaq(open ? null : faq.id)}
+                    >
+                      <span>{faq.q}</span>
+                      <span className="text-slate-400">{open ? "−" : "+"}</span>
+                    </button>
+                    {open && (
+                      <div className="px-4 pb-3 text-sm text-slate-300 whitespace-pre-line">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -265,3 +336,31 @@ function LanguageSwitcher({
     </div>
   );
 }
+
+const faqItems: { id: string; q: string; a: string }[] = [
+  {
+    id: "local",
+    q: "Do my PDFs upload anywhere?",
+    a: "No. They stay in your browser via react-pdf/PDF.js. Only selected text is sent to your chosen provider.",
+  },
+  {
+    id: "providers",
+    q: "Which providers are supported?",
+    a: "OpenAI, Anthropic, LibreTranslate, and local Ollama. Configure keys/base URLs/models in Settings.",
+  },
+  {
+    id: "privacy",
+    q: "Where are my keys stored?",
+    a: "In localStorage on your device. They are never sent to us.",
+  },
+  {
+    id: "accuracy",
+    q: "Can I switch providers per selection?",
+    a: "Yes. Change the default provider in Settings; the next selection will use it. Cached results are keyed per provider.",
+  },
+  {
+    id: "offline",
+    q: "Can it work offline?",
+    a: "Use Ollama with a local model. Ensure your Ollama server is reachable (default http://localhost:11434).",
+  },
+];
